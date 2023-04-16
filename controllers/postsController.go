@@ -8,8 +8,8 @@ import (
 
 func PostsCreate(c *gin.Context) {
 	var body struct {
-		Body  string
-		Title string
+		Body  string `json:"body"`
+		Title string `json:"title"`
 	}
 
 	c.Bind(&body)
