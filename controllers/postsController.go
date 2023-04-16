@@ -6,7 +6,7 @@ import (
 	"github.com/go-crud/models"
 )
 
-func PostsCreate(c *gin.Context) {
+func CreatePost(c *gin.Context) {
 	var body struct {
 		Body  string `json:"body"`
 		Title string `json:"title"`
@@ -37,18 +37,26 @@ func PostsGetAll(c *gin.Context) {
 	})
 }
 
-func PostShow(c *gin.Context) {
+func FindPostById(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
 	initializers.DB.First(&post, id)
+
+	if post.ID == 0 {
+		c.JSON(404, gin.H{
+			"error": "Post Not Foundd",
+		})
+
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"post": post,
 	})
 }
 
-func PostUpdate(c *gin.Context) {
+func PatchPostById(c *gin.Context) {
 	id := c.Param("id")
 
 	var body struct {
@@ -61,6 +69,14 @@ func PostUpdate(c *gin.Context) {
 	var post models.Post
 	initializers.DB.First(&post, id)
 
+	if post.ID == 0 {
+		c.JSON(404, gin.H{
+			"error": "Post Does not exist",
+		})
+
+		return
+	}
+
 	initializers.DB.Model(&post).Updates(models.Post{Title: body.Title, Body: body.Body})
 
 	c.JSON(200, gin.H{
@@ -68,7 +84,7 @@ func PostUpdate(c *gin.Context) {
 	})
 }
 
-func PostDelete(c *gin.Context) {
+func DeletePostById(c *gin.Context) {
 	id := c.Param("id")
 
 	initializers.DB.Delete(&models.Post{}, id)
