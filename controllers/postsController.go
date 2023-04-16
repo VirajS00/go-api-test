@@ -45,7 +45,7 @@ func FindPostById(c *gin.Context) {
 
 	if post.ID == 0 {
 		c.JSON(404, gin.H{
-			"error": "Post Not Foundd",
+			"error": "Post Not Found",
 		})
 
 		return
