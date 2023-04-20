@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-crud/initializers"
 	"github.com/go-crud/models"
@@ -19,11 +21,11 @@ func CreatePost(c *gin.Context) {
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
-		c.Status(400)
+		c.Status(http.StatusBadRequest)
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"post": post,
 	})
 }
@@ -32,7 +34,7 @@ func PostsGetAll(c *gin.Context) {
 	var posts []models.Post
 	initializers.DB.Find(&posts)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"posts": posts,
 	})
 }
@@ -44,14 +46,14 @@ func FindPostById(c *gin.Context) {
 	initializers.DB.First(&post, id)
 
 	if post.ID == 0 {
-		c.JSON(404, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"error": "Post Not Found",
 		})
 
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"post": post,
 	})
 }
@@ -70,7 +72,7 @@ func PatchPostById(c *gin.Context) {
 	initializers.DB.First(&post, id)
 
 	if post.ID == 0 {
-		c.JSON(404, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"error": "Post Does not exist",
 		})
 
@@ -79,7 +81,7 @@ func PatchPostById(c *gin.Context) {
 
 	initializers.DB.Model(&post).Updates(models.Post{Title: body.Title, Body: body.Body})
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"post": post,
 	})
 }
@@ -89,5 +91,5 @@ func DeletePostById(c *gin.Context) {
 
 	initializers.DB.Delete(&models.Post{}, id)
 
-	c.Status(204)
+	c.Status(http.StatusNoContent)
 }
