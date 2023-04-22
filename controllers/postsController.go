@@ -89,7 +89,15 @@ func PatchPostById(c *gin.Context) {
 func DeletePostById(c *gin.Context) {
 	id := c.Param("id")
 
-	initializers.DB.Delete(&models.Post{}, id)
+	q := initializers.DB.Delete(&models.Post{}, id)
+
+	if q.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"error": q.Error,
+		})
+
+		return
+	}
 
 	c.Status(http.StatusNoContent)
 }
